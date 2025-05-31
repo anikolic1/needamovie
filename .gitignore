@@ -1,0 +1,20 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node.js
+frontend/node_modules/
+frontend/dist/
+
+# Flask
+.env
+.flaskenv
+instance/
+
+# VS Code
+.vscode/
+
+# OS-specific
+.DS_Store
+Thumbs.db
