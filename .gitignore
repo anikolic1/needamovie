@@ -8,7 +8,6 @@ frontend/node_modules/
 frontend/dist/
 
 # Flask
-.env
 .flaskenv
 instance/
 
@@ -18,3 +17,6 @@ instance/
 # OS-specific
 .DS_Store
 Thumbs.db
+
+# env
+**/.env

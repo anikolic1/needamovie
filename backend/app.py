@@ -8,9 +8,22 @@ CORS(app)
 def home():
     return "Backend operational"
 
+# endpoint for scraping
 @app.route("/api/scrape", methods=["POST"])
-def scrape_profile():
+def api_scrape():
     data = request.get_json()
-    profile_url = data.get("url")
-    # TODO scraper function
-    return jsonify({"message":f"Received URL: {profile_url}"})
+    username = data.get("username")
+    scraped_data, error = scrape_letterboxd_profile(username)
+    if error:
+        return jsonify({"error": error}, 400)
+    return jsonify({"message":f"Received URL: {username}"})
+
+def scrape_profile_data():
+    # for now, just return the username
+    try:
+        if not username:
+            return None, "No URL provided"
+        # scraper logic here
+        return {"username": username}, None
+    except Exception as e:
+        return None, str(e)
