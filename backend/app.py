@@ -12,17 +12,17 @@ def home():
 @app.route("/api/scrape", methods=["POST"])
 def api_scrape():
     data = request.get_json()
-    username = data.get("username")
-    scraped_data, error = scrape_letterboxd_profile(username)
+    username = data.get("userName")
+    scraped_data, error = scrape_profile_data(username)
     if error:
-        return jsonify({"error": error}, 400)
-    return jsonify({"message":f"Received URL: {username}"})
+        return jsonify({"error": error}), 400
+    return jsonify({"message":f"Received Username: {username}"})
 
-def scrape_profile_data():
+def scrape_profile_data(username):
     # for now, just return the username
     try:
         if not username:
-            return None, "No URL provided"
+            return None, "No username provided"
         # scraper logic here
         return {"username": username}, None
     except Exception as e:

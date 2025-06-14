@@ -1,5 +1,4 @@
-import { use, useState } from 'react';
-
+import { useState } from 'react';
 import './App.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -9,7 +8,7 @@ function App() {
   const [responseMessage, setResponseMessage] = useState("");
 
   const handleSubmit = async (e) => {
-    e.PreventDefault();
+    e.preventDefault();
     setResponseMessage("");
 
     // no empty username
@@ -19,15 +18,16 @@ function App() {
     }
 
     try {
-      const response = await fetch(BACKEND_URL + "api/scrape", {
+      const response = await fetch("http://127.0.0.1:5000/api/scrape", {
         method: "POST",
         headers: {
           "Content-Type" : "application/json"
         },
-        body: JSON.stringify({username}),
+        body: JSON.stringify({userName}),
       });
 
       const data = await response.json();
+
       if (response.ok) {
         setResponseMessage(`Success, Server says: ${data.message}`);
       } else {
@@ -36,11 +36,23 @@ function App() {
     } catch(error) {
       setResponseMessage("Network error."); 
     }
-  }
+  };
 
   return (
     <>
-      
+      <h1>Enter your Letterboxd username:</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={userName}
+          onChange={e => setUsername(e.target.value)}
+        />
+        <button type="submit">
+          Submit
+        </button>
+      </form>
+      {responseMessage && <p>{responseMessage}</p>}
     </>
   );
 }
