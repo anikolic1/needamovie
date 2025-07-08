@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from scraper import scrape_profile
 
 app = Flask(__name__)
 CORS(app)
@@ -13,17 +14,9 @@ def home():
 def api_scrape():
     data = request.get_json()
     username = data.get("userName")
-    scraped_data, error = scrape_profile_data(username)
+    scraped_data, error = scrape_profile(username)
+
+    # for now, just returning some info of the first movie on the profile
     if error:
         return jsonify({"error": error}), 400
-    return jsonify({"message":f"Received Username: {username}"})
-
-def scrape_profile_data(username):
-    # for now, just return the username
-    try:
-        if not username:
-            return None, "No username provided"
-        # scraper logic here
-        return {"username": username}, None
-    except Exception as e:
-        return None, str(e)
+    return jsonify({"message":f"Movie URL: {scraped_data['movie_url']}"})

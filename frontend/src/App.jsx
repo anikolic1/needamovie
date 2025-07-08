@@ -3,6 +3,9 @@ import './App.css';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
+/* main app component, contains username and response message state
+variables, user submits username and then a post request is sent
+to backend to scrape profile */
 function App() {
   const [userName, setUsername] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
@@ -12,12 +15,18 @@ function App() {
     e.preventDefault();
     setResponseMessage("");
 
-    // no empty username
+    // username validation logic
     if (userName.trim() === "") {
       setResponseMessage("Please enter a username");
       return;
     }
+    if (!isValidUsername(userName)) {
+      setResponseMessage("Invalid username, please try again.");
+      setUsername("");
+      return;
+    }
 
+    // post request for the username
     try {
       const response = await fetch(BACKEND_URL + "api/scrape", {
         method: "POST",
@@ -31,8 +40,9 @@ function App() {
 
       if (response.ok) {
         setResponseMessage(`Success, Server says: ${data.message}`);
+        setUsername("");
       } else {
-        setResponseMessage(`Error: ${data.message}`);
+        setResponseMessage(`Error: ${data.error}`);
       }
     } catch(error) {
       setResponseMessage("Network error."); 
@@ -56,6 +66,15 @@ function App() {
       {responseMessage && <p>{responseMessage}</p>}
     </>
   );
+}
+
+function isValidUsername(username) {
+  // letterboxd username rules are: a-z, A-Z, 0-9, _, and 2-15 chars
+  const regex = /^[a-zA-Z0-9_]{2,15}$/;
+  if (!username) return false;
+  if (!regex.test(username)) return false;
+
+  return true;
 }
 
 export default App;
