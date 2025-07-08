@@ -7,6 +7,7 @@ function App() {
   const [userName, setUsername] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
 
+  // handler for when user clicks button to submit username
   const handleSubmit = async (e) => {
     e.preventDefault();
     setResponseMessage("");
