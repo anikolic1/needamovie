@@ -14,7 +14,8 @@ def home():
 def api_scrape():
     data = request.get_json()
     username = data.get("userName")
-    scraped_data, error = scrape_profile(username)
+    max_movies = 15
+    scraped_data, error = scrape_profile(username, max_movies)
 
     # for now, just returning some info of the first movie on the profile
     if error:

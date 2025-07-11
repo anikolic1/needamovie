@@ -20,7 +20,7 @@ function App() {
       setResponseMessage("Please enter a username");
       return;
     }
-    if (!isValidUsername(userName)) {
+    else if (!isValidUsername(userName)) {
       setResponseMessage("Invalid username, please try again.");
       setUsername("");
       return;
