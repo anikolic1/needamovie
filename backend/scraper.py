@@ -15,17 +15,17 @@ HEADERS = {
                 "application/signed-exchange;v=b3;q=0.7"
             ),
             "Connection": "keep-alive",
-        }
+}
 
 def scrape_profile(username, max_movies):
     if not username:
         return None, "No username provided"
     
-    # get request to the user's list of movies sorted by highest rated
     url = f"{BASE_URL}/{username}/films/by/entry-rating/"
     
     # add retry logic for the get request
     # add delay to avoid spam attempts
+    # get request to the user's list of movies sorted by highest rated
     try:  
         response = requests.get(url, headers=HEADERS, timeout=10)
         if response.status_code != 200:
@@ -36,11 +36,48 @@ def scrape_profile(username, max_movies):
     # think of edge cases like private profiles, etc
     # for now, just getting the first movie listed
     soup = BeautifulSoup(response.text, "html.parser")
-    movie = soup.select_one("div.film-poster")
 
-    # find first poster, and get the link
-    if movie and movie.has_attr("data-target-link"):
-        movie_url = f"{BASE_URL}/" + movie["data-target-link"]
-        return {"movie_url": movie_url}, None
+    # select all the movies shown on this page
+    movie_blocks = soup.select("ul.poster-list li")
+    movies = []
+
+    # loop through the first X movies and get the relevant info
+    for block in movie_blocks[:max_movies]:
+        poster_div = block.find("div", class_="film-poster")
+        if not poster_div:
+            continue
+
+        # movie title
+        img = poster_div.find("img")
+        title = img.get("alt") if img else None
+
+        # movie url
+        temp_url = poster_div.get("data-target-link")
+        movie_url = f"{BASE_URL}{temp_url}" if temp_url else None
+
+        # movie rating
+        rating_span = block.find("span", class_="rating")
+        rating = None
+        if rating_span:
+            for span_class in rating_span.get("class", []):
+                if span_class.startswith("rated-"):
+                    # extract the rating number from the class name
+                    try:
+                        rating = int(span_class.split("-")[1]) / 2
+                        break
+                    except ValueError:
+                        continue
+
+        if title and movie_url:
+            movies.append({
+                "title": title,
+                "movie_url": movie_url,
+                "rating": rating
+            })
+    if movies:
+        return {
+            "movies": movies,
+            "count": len(movies),
+        }, None
     else:
         return None, "No films found on profile"

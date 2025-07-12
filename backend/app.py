@@ -15,9 +15,12 @@ def api_scrape():
     data = request.get_json()
     username = data.get("userName")
     max_movies = 15
+
+    # scrape the profile, returns dict of highest rated movies
     scraped_data, error = scrape_profile(username, max_movies)
 
-    # for now, just returning some info of the first movie on the profile
+    # for now, just returning the top movies listed on the profile
+    # afterwards, want to return movies: scraped_data['movies'] and count
     if error:
         return jsonify({"error": error}), 400
-    return jsonify({"message":f"Movie URL: {scraped_data['movie_url']}"})
+    return jsonify({"message":f"Movie List:\n {scraped_data['movies']}"})

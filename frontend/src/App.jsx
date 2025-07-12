@@ -39,7 +39,7 @@ function App() {
       const data = await response.json();
 
       if (response.ok) {
-        setResponseMessage(`Success, Server says: ${data.message}`);
+        setResponseMessage(`Success! ${data.message}`);
         setUsername("");
       } else {
         setResponseMessage(`Error: ${data.error}`);
