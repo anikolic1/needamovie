@@ -1,3 +1,4 @@
+/* app styling */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +40,37 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* styling for the movie cards */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 1.5rem;
+}
+
+.movie-card {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.movie-card:hover {
+  transform: scale(1.02);
+}
+
+.movie-card a {
+  display: block;
+  margin-top: 0.5rem;
+  color: #0077cc;
+  text-decoration: none;
+}
+
+.movie-card a:hover {
+  text-decoration: underline;
 }

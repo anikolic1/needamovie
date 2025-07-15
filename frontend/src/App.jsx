@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css';
+import MovieCard from './MovieCard';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -68,6 +69,9 @@ function App() {
         </button>
       </form>
       {responseMessage && <p>{responseMessage}</p>}
+      <div className="movie-grid">
+        {movies[0] && <MovieCard key={movies[0].title} movie={movies[0]} />}
+      </div>
     </>
   );
 }
