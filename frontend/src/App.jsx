@@ -70,7 +70,9 @@ function App() {
       </form>
       {responseMessage && <p>{responseMessage}</p>}
       <div className="movie-grid">
-        {movies[0] && <MovieCard key={movies[0].title} movie={movies[0]} />}
+        {movies && movies.map(movie => (
+          <MovieCard key={movie.title} movie={movie} />
+        ))}
       </div>
     </>
   );

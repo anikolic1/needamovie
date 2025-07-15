@@ -8,7 +8,7 @@ function MovieCard({ movie }) {
                 View on Letterboxd
             </a>
         </div>
-    )
+    );
 }
 
 export default MovieCard;
