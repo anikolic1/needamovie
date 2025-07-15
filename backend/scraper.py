@@ -34,7 +34,6 @@ def scrape_profile(username, max_movies):
         return None, str(e)
     
     # think of edge cases like private profiles, etc
-    # for now, just getting the first movie listed
     soup = BeautifulSoup(response.text, "html.parser")
 
     # select all the movies shown on this page
@@ -56,9 +55,11 @@ def scrape_profile(username, max_movies):
         movie_url = f"{BASE_URL}{temp_url}" if temp_url else None
 
         # movie rating
+        # the rating is stored in the class name of a span tag, need to extract
         rating_span = block.find("span", class_="rating")
         rating = None
         if rating_span:
+            # loop through each class in the span until the rating-X class
             for span_class in rating_span.get("class", []):
                 if span_class.startswith("rated-"):
                     # extract the rating number from the class name
@@ -68,7 +69,8 @@ def scrape_profile(username, max_movies):
                     except ValueError:
                         continue
 
-        if title and movie_url:
+        # if it's a valid movie, append to list of dicts for each movie
+        if title and movie_url and rating is not None:
             movies.append({
                 "title": title,
                 "movie_url": movie_url,

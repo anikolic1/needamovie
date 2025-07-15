@@ -9,11 +9,13 @@ to backend to scrape profile */
 function App() {
   const [userName, setUsername] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
+  const [movies, setMovies] = useState([]);
 
   // handler for when user clicks button to submit username
   const handleSubmit = async (e) => {
     e.preventDefault();
     setResponseMessage("");
+    setMovies([]);
 
     // username validation logic
     if (userName.trim() === "") {
@@ -39,7 +41,9 @@ function App() {
       const data = await response.json();
 
       if (response.ok) {
-        setResponseMessage(`Success! ${data.message}`);
+        setMovies(data.movies);
+        const movieTitles = data.movies.map(movie => movie.title).join(", ");
+        setResponseMessage(`Success! ${movieTitles}`);
         setUsername("");
       } else {
         setResponseMessage(`Error: ${data.error}`);
@@ -69,7 +73,7 @@ function App() {
 }
 
 function isValidUsername(username) {
-  // letterboxd username rules are: a-z, A-Z, 0-9, _, and 2-15 chars
+  // letterboxd username rules are: a-z, A-Z, 0-9, _, and 2-15 chars long
   const regex = /^[a-zA-Z0-9_]{2,15}$/;
   if (!username) return false;
   if (!regex.test(username)) return false;
