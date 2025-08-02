@@ -11,12 +11,14 @@ function App() {
   const [userName, setUsername] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // handler for when user clicks button to submit username
   const handleSubmit = async (e) => {
     e.preventDefault();
     setResponseMessage("");
     setMovies([]);
+    setLoading(true);
 
     // username validation logic
     if (userName.trim() === "") {
@@ -41,6 +43,8 @@ function App() {
 
       const data = await response.json();
 
+      // if response ok then update the movies variable from backend
+      // update loading after and handle any errors
       if (response.ok) {
         setMovies(data.movies);
         const movieTitles = data.movies.map(movie => movie.title).join(", ");
@@ -51,6 +55,8 @@ function App() {
       }
     } catch(error) {
       setResponseMessage("Network error."); 
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,11 +69,17 @@ function App() {
           placeholder="Username"
           value={userName}
           onChange={e => setUsername(e.target.value)}
+          disabled={loading}
         />
-        <button type="submit">
+        <button type="submit" disabled={loading}>
           Submit
         </button>
       </form>
+      {loading && (
+        <div className="loading">
+          <p>Loading results, please wait...</p>
+        </div>
+      )}
       {responseMessage && <p>{responseMessage}</p>}
       <div className="movie-grid">
         {movies && movies.map(movie => (

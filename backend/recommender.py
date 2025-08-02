@@ -56,9 +56,8 @@ def get_movie_recs(movies):
             tools=TOOLS
         )
 
-        # function_call = reponse.choices[0].message.tool_calls[0]
-        # arguments = function_call.function.arguments
-        # recs = json.loads(arguments)
+        # tool_call = response.output[0]
+        # recs = json.loads(tool_call.arguments)
         # return recs
 
         print(response.output)
