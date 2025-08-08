@@ -56,11 +56,16 @@ def get_movie_recs(movies):
             tools=TOOLS
         )
 
-        # tool_call = response.output[0]
-        # recs = json.loads(tool_call.arguments)
-        # return recs
-
-        print(response.output)
+        print("Full response output:", response.output)
+        print("Response output types:", [type(item) for item in response.output])
+        # loop over response blocks to find tool_calls and extract
+        for item in response.output:
+            if getattr(item, "type", None) == "function_call" and getattr(item, "name", None) == "rec_movies":
+                args = json.loads(item.arguments)
+                return args["recommendations"]
+        
+        # if nothing found in the loop, return empty list
+        return []
     except Exception as e:
         print("Error calling OpenAI API:")
         print(e)

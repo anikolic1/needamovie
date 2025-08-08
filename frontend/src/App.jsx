@@ -46,8 +46,8 @@ function App() {
       // if response ok then update the movies variable from backend
       // update loading after and handle any errors
       if (response.ok) {
-        setMovies(data.movies);
-        const movieTitles = data.movies.map(movie => movie.title).join(", ");
+        setMovies(data);
+        const movieTitles = data.map(movie => movie.title).join(", ");
         setResponseMessage(`Success! ${movieTitles}`);
         setUsername("");
       } else {

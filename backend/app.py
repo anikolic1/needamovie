@@ -20,10 +20,9 @@ def api_scrape():
     # scrape the profile, returns list of dicts of highest rated movies
     scraped_data, error = scrape_profile(username, max_movies)
     # below is a temp function call to test out the api
-    get_movie_recs(scraped_data["movies"])
+    movie_recs = get_movie_recs(scraped_data["movies"])
 
-    # for now, just returning the top movies listed on the profile
-    # afterwards, want to return movies: scraped_data['movies'] and count
+    # return recommended movies as a list of dicts with title, year, reason
     if error:
         return jsonify({"error": error}), 400
-    return jsonify(scraped_data)
+    return jsonify(movie_recs)
