@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from scraper import scrape_profile
 from recommender import get_movie_recs
+from omdb_client import get_movie_info
 
 app = Flask(__name__)
 CORS(app)
@@ -19,10 +20,17 @@ def api_scrape():
 
     # scrape the profile, returns list of dicts of highest rated movies
     scraped_data, error = scrape_profile(username, max_movies)
-    # below is a temp function call to test out the api
+    # get recommended movies based on scraped movies
     movie_recs = get_movie_recs(scraped_data["movies"])
+
+    # now add additional info to each movie rec, such as genre, director, etc
+    final_movie_recs = []
+    for movie in movie_recs:
+        extra_info = get_movie_info(movie["title"], movie["year"])
+        final_movie = {**movie, **extra_info}
+        final_movie_recs.append(final_movie)
 
     # return recommended movies as a list of dicts with title, year, reason
     if error:
         return jsonify({"error": error}), 400
-    return jsonify(movie_recs)
+    return jsonify(final_movie_recs)

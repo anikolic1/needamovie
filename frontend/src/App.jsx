@@ -23,11 +23,13 @@ function App() {
     // username validation logic
     if (userName.trim() === "") {
       setResponseMessage("Please enter a username");
+      setLoading(false);
       return;
     }
     else if (!isValidUsername(userName)) {
       setResponseMessage("Invalid username, please try again.");
       setUsername("");
+      setLoading(false);
       return;
     }
 

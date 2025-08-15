@@ -78,8 +78,7 @@ def scrape_profile(username, max_movies):
             })
     if movies:
         return {
-            "movies": movies,
-            "count": len(movies),
+            "movies": movies
         }, None
     else:
         return None, "No films found on profile"

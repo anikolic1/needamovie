@@ -5,19 +5,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+NUM_RECS = 6
 MODEL = "gpt-4o"
 TOOLS= [{
     "type": "function",
     "name": "rec_movies",
-    "description": ("Generate 5 personalized movie recommendations the user"
+    "description": (f"Generate {NUM_RECS} personalized movie recommendations the user"
     "has not seen, based on the movies they have rated"),
     "parameters": {
         "type": "object",
         "properties": {
             "recommendations": {
                 "type": "array",
-                "minItems": 5,
-                "maxItems": 5,
+                "minItems": NUM_RECS,
+                "maxItems": NUM_RECS,
                 "items": {
                     "type": "object",
                     "properties": {
@@ -42,9 +43,8 @@ def get_movie_recs(movies):
             "The following is a list of movies the user has rated, from "
             "0 to 5: "
             f"{json.dumps(movies)}\n"
-            "Please recommend exactly 5 movies the user has NOT yet seen, "
-            "each with a title (string), year (integer), and a "
-            "brief reason (string)."
+            f"Please recommend exactly {NUM_RECS} movies the user has NOT yet seen, "
+            "each with a title (string), year (integer), and a brief reason (string)."
         )
     }
 
@@ -56,8 +56,6 @@ def get_movie_recs(movies):
             tools=TOOLS
         )
 
-        print("Full response output:", response.output)
-        print("Response output types:", [type(item) for item in response.output])
         # loop over response blocks to find tool_calls and extract
         for item in response.output:
             if getattr(item, "type", None) == "function_call" and getattr(item, "name", None) == "rec_movies":
