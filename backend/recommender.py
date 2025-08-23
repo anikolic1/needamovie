@@ -10,8 +10,7 @@ MODEL = "gpt-4o"
 TOOLS= [{
     "type": "function",
     "name": "rec_movies",
-    "description": (f"Generate {NUM_RECS} personalized movie recommendations the user"
-    "has not seen, based on the movies they have rated"),
+    "description": (f"Generate {NUM_RECS} personalized movie recommendations the user has NOT yet seen, based on the movies they have rated"),
     "parameters": {
         "type": "object",
         "properties": {
