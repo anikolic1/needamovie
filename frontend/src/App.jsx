@@ -50,7 +50,7 @@ function App() {
       if (response.ok) {
         setMovies(data);
         const movieTitles = data.map(movie => movie.title).join(", ");
-        setResponseMessage(`Success! ${movieTitles}`);
+        setResponseMessage(`Success: ${movieTitles}`);
         setUsername("");
       } else {
         setResponseMessage(`Error: ${data.error}`);

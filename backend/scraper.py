@@ -21,64 +21,75 @@ def scrape_profile(username, max_movies):
     if not username:
         return None, "No username provided"
     
-    url = f"{BASE_URL}/{username}/films/by/entry-rating/"
-    
-    # add retry logic for the get request
-    # add delay to avoid spam attempts
-    # get request to the user's list of movies sorted by highest rated
-    try:  
-        response = requests.get(url, headers=HEADERS, timeout=10)
-        if response.status_code != 200:
-            return None, f"Failed to fetch profile (status code {response.status_code})"
-    except Exception as e:
-        return None, str(e)
-    
-    # think of edge cases like private profiles, etc
-    soup = BeautifulSoup(response.text, "html.parser")
-
-    # select all the movies shown on this page
-    movie_blocks = soup.select("ul.poster-list li")
     movies = []
+    page = 1
 
-    # loop through the first X movies and get the relevant info
-    for block in movie_blocks[:max_movies]:
-        poster_div = block.find("div", class_="film-poster")
-        if not poster_div:
-            continue
+    # loop through the pages of the user's profile
+    # only scrapes up to max_movies, or less if it encounters an empty page
+    while len(movies) < max_movies:
+        url = f"{BASE_URL}/{username}/films/by/entry-rating/page/{page}/"
 
-        # movie title
-        img = poster_div.find("img")
-        title = img.get("alt") if img else None
+        # get request to the user's list of movies sorted by highest rated for current page
+        try:
+            response = requests.get(url, headers=HEADERS, timeout=10)
+            if response.status_code != 200:
+                return None, f"Failed to fetch profile (status code {response.status_code})"
+        except Exception as e:
+            return None, str(e)
+        
+        # need edge cases like private profile, etc
+        soup = BeautifulSoup(response.text, "html.parser")
 
-        # movie url
-        temp_url = poster_div.get("data-target-link")
-        movie_url = f"{BASE_URL}{temp_url}" if temp_url else None
+        # select all the movies shown on this page
+        movie_blocks = soup.select("ul.grid li")
+        # no more movies, page will be blank, break
+        if not movie_blocks:
+            break
 
-        # movie rating
-        # the rating is stored in the class name of a span tag, need to extract
-        rating_span = block.find("span", class_="rating")
-        rating = None
-        if rating_span:
-            # loop through each class in the span until the rating-X class
-            for span_class in rating_span.get("class", []):
-                if span_class.startswith("rated-"):
-                    # extract the rating number from the class name
-                    try:
-                        rating = int(span_class.split("-")[1]) / 2
-                        break
-                    except ValueError:
-                        continue
+        for block in movie_blocks:
+            # stop scraping if max_movies is reached
+            if len(movies) >= max_movies:
+                break
 
-        # if it's a valid movie, append to list of dicts for each movie
-        if title and movie_url and rating is not None:
-            movies.append({
-                "title": title,
-                "movie_url": movie_url,
-                "rating": rating
-            })
+            poster_div = block.find("div", class_="react-component")
+            if not poster_div:
+                continue
+
+            # movie title
+            img = poster_div.find("img")
+            title = img.get("alt") if img else None
+
+            # movie url
+            temp_url = poster_div.get("data-target-link")
+            movie_url = f"{BASE_URL}{temp_url}" if temp_url else None
+
+            # movie rating
+            # the rating is stored in the class name of a span tag, need to extract
+            rating_span = block.find("span", class_="rating")
+            rating = None
+            if rating_span:
+                # loop through each class in the span until the rating-X class
+                for span_class in rating_span.get("class", []):
+                    if span_class.startswith("rated-"):
+                        # extract the rating number from the class name
+                        try:
+                            rating = int(span_class.split("-")[1]) / 2
+                            break
+                        except ValueError:
+                            continue
+
+            # if it's a valid movie, append to list of dicts for each movie
+            if title and movie_url and rating is not None:
+                movies.append({
+                    "title": title,
+                    "movie_url": movie_url,
+                    "rating": rating
+                })
+
+        # increase page count for each loop    
+        page += 1
+
     if movies:
-        return {
-            "movies": movies
-        }, None
+        return {"movies": movies}, None
     else:
         return None, "No films found on profile"

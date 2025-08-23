@@ -16,10 +16,12 @@ def home():
 def api_scrape():
     data = request.get_json()
     username = data.get("userName")
-    max_movies = 15
+    max_movies = 300
 
     # scrape the profile, returns list of dicts of highest rated movies
     scraped_data, error = scrape_profile(username, max_movies)
+    print("SCRAPED DATA: ", scraped_data)
+    print("ERROR: ", error)
     # get recommended movies based on scraped movies
     movie_recs = get_movie_recs(scraped_data["movies"])
 
