@@ -59,10 +59,6 @@ def scrape_profile(username, max_movies):
             img = poster_div.find("img")
             title = img.get("alt") if img else None
 
-            # movie url
-            temp_url = poster_div.get("data-target-link")
-            movie_url = f"{BASE_URL}{temp_url}" if temp_url else None
-
             # movie rating
             # the rating is stored in the class name of a span tag, need to extract
             rating_span = block.find("span", class_="rating")
@@ -79,10 +75,9 @@ def scrape_profile(username, max_movies):
                             continue
 
             # if it's a valid movie, append to list of dicts for each movie
-            if title and movie_url and rating is not None:
+            if title and rating is not None:
                 movies.append({
                     "title": title,
-                    "movie_url": movie_url,
                     "rating": rating
                 })
 
