@@ -10,7 +10,12 @@ MODEL = "gpt-4o"
 TOOLS= [{
     "type": "function",
     "name": "rec_movies",
-    "description": (f"Generate {NUM_RECS} personalized movie recommendations the user has NOT yet seen, based on the movies they have rated"),
+    "description": (
+        f"Generate {NUM_RECS} personalized movie recommendations the user based on the movies they have rated. "
+        "Strictly DO NOT recommend any movies the user has already rated. "
+        "Check the provided list carefully before generating recommendations. "
+        "Each recommendation must include a title (string), year (integer), and a brief reason (string)."
+        ),
     "parameters": {
         "type": "object",
         "properties": {
@@ -39,11 +44,11 @@ def get_movie_recs(movies):
     user_message = {
         "role": "user",
         "content": (
-            "The following is a list of movies the user has rated, from "
-            "0 to 5: "
+            "The following is a list of movies the user has already rated, from 0 to 5"
             f"{json.dumps(movies)}\n"
             f"Please recommend exactly {NUM_RECS} movies the user has NOT yet seen, "
-            "each with a title (string), year (integer), and a brief reason (string)."
+            "each with a title (string), year (integer), and a brief reason (string). "
+            "Do NOT include any movie from the above list."
         )
     }
 
@@ -55,14 +60,23 @@ def get_movie_recs(movies):
             tools=TOOLS
         )
 
-        # loop over response blocks to find tool_calls and extract
+        # loop over response blocks to find tool_calls and extract the recs
+        recs = []
         for item in response.output:
             if getattr(item, "type", None) == "function_call" and getattr(item, "name", None) == "rec_movies":
                 args = json.loads(item.arguments)
-                return args["recommendations"]
+                recs = args["recommendations"]
+                break
         
-        # if nothing found in the loop, return empty list
-        return []
+        # GPT has a tendency to recommend already seen movies, so filter those out
+        final_recs = []
+        seen_movies = {movie["title"].lower() for movie in movies}
+        for rec in recs:
+            if rec["title"].lower() not in seen_movies:
+                final_recs.append(rec)
+
+        return final_recs
     except Exception as e:
         print("Error calling OpenAI API:")
         print(e)
+        return []

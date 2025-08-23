@@ -3,6 +3,7 @@ function MovieCard({ movie }) {
     return (
         <div className="movie-card">
             <h3>{movie.title}</h3>
+            <p>{movie.year}</p>
             <img src={movie.poster}></img>
             <p>{movie.director}</p>
             <p>{movie.genre}</p>
