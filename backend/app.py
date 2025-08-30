@@ -5,21 +5,27 @@ from recommender import get_movie_recs
 from omdb_client import get_movie_info
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": [
+    "https://anikolic1.github.io/",
+    "https://anikolic1.github.io/needamovie",
+    "http://localhost:5173"
+]}})
 
 @app.route("/")
 def home():
-    return "Backend operational"
+    return "Backend operational", 200
 
 # endpoint for scraping
 @app.route("/api/scrape", methods=["POST"])
 def api_scrape():
     data = request.get_json()
     username = data.get("userName")
-    max_movies = 450
+    max_movies = 300
 
     # scrape the profile, returns list of dicts of highest rated movies
     scraped_data, error = scrape_profile(username, max_movies)
+    if error:
+        return jsonify({"error": error}), 400
     # get recommended movies based on scraped movies
     movie_recs = get_movie_recs(scraped_data["movies"])
 
@@ -31,6 +37,4 @@ def api_scrape():
         final_movie_recs.append(final_movie)
 
     # return recommended movies as a list of dicts with title, year, reason
-    if error:
-        return jsonify({"error": error}), 400
     return jsonify(final_movie_recs)
