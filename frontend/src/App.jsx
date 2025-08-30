@@ -69,6 +69,7 @@ function App() {
         <input
           type="text"
           placeholder="Username"
+          class="search-bar"
           value={userName}
           onChange={e => setUsername(e.target.value)}
           disabled={loading}

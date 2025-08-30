@@ -81,3 +81,14 @@
   object-fit: scale-down;
   border-radius: 8px;
 }
+
+.search-bar {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.6em 1em;
+  border: 1px solid #000;
+  border-radius: 999px;
+  font-size: 1em;
+  outline: none;
+  box-sizing: border-box;
+}
