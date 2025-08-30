@@ -20,4 +20,4 @@ Thumbs.db
 
 # env
 **/.env
-.env.production
+**/.env.production
