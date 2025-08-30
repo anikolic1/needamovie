@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 NUM_RECS = 6
-MODEL = "gpt-5"
+MODEL = "gpt-4o"
 TOOLS= [{
     "type": "function",
     "name": "rec_movies",
