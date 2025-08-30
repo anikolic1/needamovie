@@ -5,11 +5,7 @@ from recommender import get_movie_recs
 from omdb_client import get_movie_info
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": [
-    "https://anikolic1.github.io/",
-    "https://anikolic1.github.io/needamovie/",
-    "http://localhost:5173"
-]}})
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.route("/")
 def home():
